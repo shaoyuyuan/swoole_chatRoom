@@ -9,7 +9,7 @@ php 开启swoole扩展
 
 ```shell script
 #进入到项目目录
-cd /www/wwwroot/swoole_chatRoom
+cd /www/wwwroot/web_server/swoole_chatRoom
 #运行聊天室服务
 php ws_server.php
 
