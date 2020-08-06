@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title></title>
+
+    <meta charset="UTF-8">
+
+</head>
+
+<body>
+<!--用户信息-->
+<div>
+    <input type="text" id="user_id" placeholder="随机id" readonly>
+    <input type="text" id="nickname" placeholder="昵称" readonly>
+</div>
+<!--用户列表-->
+<div id="user_list" >
+    <ul>
+        <li>1</li>
+    </ul>
+</div>
+
+<!--消息主体-->
+<div style="width:600px;margin:0 auto;border:1px solid #ccc;">
+
+    <div id="content" style="overflow-y:auto;height:300px;"></div>
+
+    <hr/>
+
+    <div style="height:40px">
+
+        <input type="text" id="message" style="margin-left:10px;height:25px;width:450px;">
+
+        <button type="button" onclick="sendMessage()" style="height:28px;width:75px;">发送</button>
+    </div>
+
+</div>
+<script src="js/jquery.min.js"></script>
+<script type="text/javascript">
+
+    var timestamp = (new Date()).valueOf();
+    var user_id = parseInt(Math.random()*10) + timestamp;
+
+    var webSocket = new WebSocket("ws://192.168.0.15:9501?user_id="+user_id+"&nickname="+timestamp);
+
+    window.onload = function() {
+            document.getElementById('user_id').value = user_id;
+            document.getElementById('nickname').value =  timestamp;
+
+            webSocket.onopen = function (event) {
+
+            };
+
+            webSocket.onmessage = function (event) {
+
+                var content = document.getElementById('content');
+                let message = JSON.parse(event.data);
+                console.log(message);
+                //接收消息
+                content.innerHTML = content.innerHTML.concat('<p style="margin-left:20px;height:20px;line-height:20px;">'+message.user.nickname+'：'+message.message+'</p>');
+
+
+
+            }
+            webSocket.onclose = function (event) {
+                console.log(event);
+
+            }
+
+        }
+
+    function sendMessage(){
+        var data = document.getElementById('message').value;
+
+        webSocket.send(data);
+
+    }
+
+    function getUserList() {
+
+        var xmlHttp=null;
+
+        try
+        {// Firefox, Opera 8.0+, Safari, IE7
+            xmlHttp=new XMLHttpRequest();
+        }
+        catch(e)
+        {// Old IE
+            try
+            {
+                xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            catch(e)
+            {
+                alert ("Your browser does not support XMLHTTP!");
+                return;
+            }
+        }
+        var url="ws_server.php/getUserList";
+        xmlHttp.open("GET",url,false);
+        xmlHttp.send(null);
+        console.log(xmlHttp.responseText);
+        // document.getElementById("txtHint").innerHTML=xmlHttp.responseText;
+    }
+
+    // self.setInterval("getUserList()",1000);
+
+
+
+
+</script>
+
+</body>
+
+</html>
